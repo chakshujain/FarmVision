@@ -5,6 +5,147 @@
 
 {% block bodyBlock %}
 
-<h1>Sumit ka form </h1>
+<form class = "w-50 m-auto" method = "post" action = "http://localhost:8000/results">
+    {% csrf_token %}
+        <div class="form-group">
+                <label for="exampleFormControlSelect1">Area</label>
+                <input type="text" class="form-control" id="exampleFormControlInput1" placeholder="Select Your Area(m*m)">
+              </div>
+    <div class="form-group">
+      <label for="exampleFormControlInput1">Location</label>
+      <select class="form-control"name="Location" id="userLocation">
+            <option class = "d-none"></option>
+            <option class = "hidden">Select default location</option>
+            <option>2</option>
+            <option>3</option>
+            <option>4</option>
+            <option>5</option>
+          </select>
+     
+    </div>
+
+    <div class="spinner d-none">
+            <div class="spinner-border text-dark " role="status">
+                    <span class="sr-only">Loading...</span>
+            </div>
+    </div>
+   
+    <span class="badge locStatus"></span>
+   
+    <div class="form-group">
+            <label for="exampleFormControlSelect1">Crops</label>
+            <select class="form-control" id="exampleFormControlSelect1">
+              <option class = "d-none"></option>
+              <option>Rice</option>
+              <option>Wheat</option>
+              <option>Majra</option>
+              <option>Moong</option>
+            </select>
+    </div>
+    <div class="form-group">
+        <label for="exampleFormControlInput1" >Budget</label>
+        <input type="text" class="form-control" id="exampleFormControlInput1" placeholder="">
+       
+    </div>
+   
+        <div class="form-group">
+            <label for="exampleFormControlInput1" class= "mr-4">Restricted to Budget</label>
+            <input type="checkbox"  id="budget">
+        </div>
+
+        <div class="form-group">
+          <input type="date" class="form-control" date-format="YYYY MMMM DD" id="startdate" name  ="startdate" placeholder="">
+          <input type="date" class="form-control" date-format="YYYY MMMM DD" id="enddate" name ="enddate" placeholder="">
+      </div>
+  
+    <button type = "submit" class = "btn btn-success w-100 " id="search-btn">Submit</button>
+  </form>
+
+
+  <script>
+
+    const userLocation = document.querySelector("#userLocation");
+    
+    const status = document.querySelector(".locStatus");
+    const spinner = document.querySelector(".spinner");
+
+
+    const startDate = document.querySelector("#startdate");
+    const endDate = document.querySelector("#enddate");
+
+    const search = document.querySelector("#search-btn");
+    
+    let latitude,longitude;
+    
+    const app_id = "mEmcQorNDxKT5Mat31QK";
+    const app_code="G6yKNlD9jS6U_QRN7PCINw";
+    const w_key="4c14c1a61b22493a98a122059191012";
+
+    userLocation.addEventListener("change",function(){
+        if(userLocation.value == "Select default location")
+          findLocation();
+        
+    })
+  
+
+    function findLocation(){
+        
+
+        function success(position) {
+          console.log(userLocation.value);
+        latitude  = position.coords.latitude;
+        longitude = position.coords.longitude;
+        const distanceUpto = 250;
+        
+        status.textContent = '';
+       //Location Request
+       axios.get(`https://reverse.geocoder.api.here.com/6.2/reversegeocode.json?prox=${latitude},${longitude},
+       ${distanceUpto}&mode=retrieveAddresses&maxresults=1&gen=9&app_id=${app_id}&app_code=${app_code}`)
+       .then(res =>{
+        spinner.className = "d-none";
+           const DetectedLoc = res.data.Response.View[0].Result[0].Location.Address.Label;
+           userLocation[0].className="d-block";
+           userLocation[0].innerText = "Select Default Location";
+           userLocation[1].innerText = DetectedLoc;
+           status.textContent = DetectedLoc;
+       })
+       .catch(err=> {
+        spinner.className = "d-none";
+        status.textContent ="Unable to Detect Location";
+       });
+     
+       
+
+    }
+
+    function error() {
+        status.textContent = 'Unable to retrieve your location';
+    }
+
+        if (!navigator.geolocation) 
+          status.textContent = 'Geolocation is not supported by your browser';
+        else {
+          spinner.className = "d-block";
+          navigator.geolocation.getCurrentPosition(success, error);
+       }
+    }
+  
+     search.addEventListener('click',(e)=>{
+       console.log(startDate.value,endDate.value);
+       //Weather Request
+       e.preventDefault();
+       axios.get(`http://api.worldweatheronline.com/premium/v1/past-weather.ashx?key=${w_key}&q=${latitude},${longitude}&fx24=yes&date=${startDate.value}&tp=24&enddate=${endDate.value}&format=json`)
+       .then(res =>{
+         console.log(res);
+       })
+       .catch(err=> {
+        console.log("Unable to get Weather Data");
+       });
+
+     });
+
+  </script>
+
+
 
 {% endblock %}
