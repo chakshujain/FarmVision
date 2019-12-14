@@ -5,7 +5,7 @@
 
 {% block bodyBlock %}
 
-<form class = "w-50 m-auto" method = "post" action = "http://localhost:8000/results">
+<form class = "w-50 m-auto" method = "post" action = ".">
     {% csrf_token %}
         <div class="form-group">
                 <label for="exampleFormControlSelect1">Area</label>
@@ -21,6 +21,7 @@
             <option>4</option>
             <option>5</option>
           </select>
+        <input  id = "latlong" type = "hidden" name = "lotlong" value = "">
      
     </div>
 
@@ -95,8 +96,18 @@
           console.log(userLocation.value);
         latitude  = position.coords.latitude;
         longitude = position.coords.longitude;
+        var latlong = document.querySelector('#latlong')
+        latlong.value = latitude;
+        console.log(latlong.value)
         const distanceUpto = 250;
-        
+
+        var data = new FormData();  
+        data.append('lat', latitude);
+        data.append('long',longitude);
+        var xhr = new XMLHttpRequest(); xhr.open('POST', '/example', true); 
+        xhr.onload = function () { console.log(this.responseText); }; xhr.send(data);
+
+
         status.textContent = '';
        //Location Request
        axios.get(`https://reverse.geocoder.api.here.com/6.2/reversegeocode.json?prox=${latitude},${longitude},
@@ -104,6 +115,7 @@
        .then(res =>{
         spinner.className = "d-none";
            const DetectedLoc = res.data.Response.View[0].Result[0].Location.Address.Label;
+           console.log(DetectedLoc)
            userLocation[0].className="d-block";
            userLocation[0].innerText = "Select Default Location";
            userLocation[1].innerText = DetectedLoc;
@@ -129,12 +141,11 @@
           navigator.geolocation.getCurrentPosition(success, error);
        }
     }
-  
-     search.addEventListener('click',(e)=>{
+   {% comment %} search.addEventListener('click',(e)=>{
        console.log(startDate.value,endDate.value);
        //Weather Request
        e.preventDefault();
-       axios.get(`http://api.worldweatheronline.com/premium/v1/past-weather.ashx?key=${w_key}&q=${latitude},${longitude}&fx24=yes&date=${startDate.value}&tp=24&enddate=${endDate.value}&format=json`)
+       axios.get(`http://api.worldweatheronline.com/premium/v1/past-weather.ashx?key=${w_key}&q=28.8945,76.5892&fx24=yes&date=${startDate.value}&tp=24&enddate=${endDate.value}&format=json`)
        .then(res =>{
          console.log(res);
        })
@@ -142,7 +153,7 @@
         console.log("Unable to get Weather Data");
        });
 
-     });
+     });  {% endcomment %}
 
   </script>
 
