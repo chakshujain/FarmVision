@@ -111,7 +111,8 @@ def rainfall(temp_final,rainfall_final,temp,rain_fall):
 def nutrients(state,rainfall_final,temp_final):
     try:
         #print('this is state:'+state)
-        with open('code/nutrientsarea.csv', 'r') as csvfile:
+        print("jjjjj")
+        with open('basicApp/ml/code/nutrientsarea.csv', 'r') as csvfile:
             reader = csv.reader(csvfile)
             for row in reader:
                if row[0] == state:
@@ -128,7 +129,7 @@ def nutrients(state,rainfall_final,temp_final):
     #nutrient based filter of crops
     try:
         
-        with open('code/cropDB.csv', 'r') as csvfile, open('code/metacrops.csv', 'w') as metacrops:
+        with open('basicApp/ml/code/cropDB.csv', 'r') as csvfile, open('basicApp/ml/code/metacrops.csv', 'w') as metacrops:
             reader = csv.reader(csvfile)
             #writer=csv.writer(metacrops)
             metacrops.writelines("Crop, Rainfall, Temperature, pH \n")
@@ -157,8 +158,8 @@ def nutrients(state,rainfall_final,temp_final):
 def filewrite():
     n=1
     try:
-        with open("code/metacrops.csv",'r') as f:
-            with open("code/metacrops11.csv", "w") as f1:
+        with open("basicApp/ml/code/metacrops.csv",'r') as f:
+            with open("basicApp/ml/code/metacrops11.csv", "w") as f1:
                 for line in f:
                     if n==1:
                         n=n+1
@@ -181,11 +182,11 @@ def regression():
     n=0
     crop_Y_pred=[]
     crop_name=[]
-    dataset=pd.read_csv('code/regressiondb.csv')
-    locbased=pd.read_csv('code/metacrops.csv')
+    dataset=pd.read_csv('basicApp/ml/code/regressiondb.csv')
+    locbased=pd.read_csv('basicApp/ml/code/metacrops.csv')
     
     try:
-       with open('code/metacrops11.csv', 'r') as csvfile:
+       with open('basicApp/ml/code/metacrops11.csv', 'r') as csvfile:
             reader = csv.reader(csvfile)
             #metacrops.writelines("Crop,Production\n")
             #os.remove('final.txt')
