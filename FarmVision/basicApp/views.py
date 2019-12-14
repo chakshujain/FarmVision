@@ -3,6 +3,7 @@ import requests
 from .models import Crop,FarmersQuery
 from django.views.decorators.csrf import csrf_exempt
 from datetime import datetime
+from .ml.ml_algo import * 
 
 w_key = "4c14c1a61b22493a98a122059191012"
 latitude = 0
@@ -18,28 +19,29 @@ def home(request):
 
         rainfall = response.json()['data']['ClimateAverages'][0]['month']
         rainfall_values = []
-        min_temp_values = []
-        max_temp_values = []
+        temp = []
         
         for i in range(0,12):
             rainfall_values.append(float(rainfall[i]['avgDailyRainfall'])*30)
-            min_temp_values.append(float(rainfall[i]['avgMinTemp']))
-            max_temp_values.append(float(rainfall[i]['absMaxTemp']))
-            
+            temperature = (float(rainfall[i]['avgMinTemp']) + float(rainfall[i]['absMaxTemp']))/2
+            temp.append(temperature)
+
+        print(temp)
+        print(setData(rainfall_values,temp,"Haryana"))
+    
         
-        currentMonth = str(datetime.now().month)
-        currentDate = str(datetime.now().date)
-        print(currentMonth)
-        if int(currentDate) >15:
-            currentMonth = currentMonth + 1
-        else:
-            currentMonth = currentMonth
-            print(currentMonth)
-            print(type(currentMonth))
+        # currentMonth = str(datetime.now().month)
+        # currentDate = str(datetime.now().date)
+        # print(currentMonth)
+        # if int(currentDate) >15:
+        #     currentMonth = currentMonth + 1
+        # else:
+        #     currentMonth = currentMonth
+        #     print(currentMonth)
+        #     print(type(currentMonth))
 
-      
+        
 
-        crop = Crop.objects.all()
 
         
 
